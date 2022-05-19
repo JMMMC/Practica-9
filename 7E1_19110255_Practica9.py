@@ -1,14 +1,16 @@
 import cv2
+import numpy as np
 
 def T_M(img,tem):
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     tem_gray = cv2.cvtColor(tem, cv2.COLOR_BGR2GRAY)
 
-    res = cv2.matchTemplate(img_gray, tem_gray, cv2.TM_SQDIFF)
-    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-    x1, y1 = min_loc
-    x2, y2 = min_loc[0] + tem.shape[1], min_loc[1] + tem.shape[0]
-    cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
+    res = cv2.matchTemplate(img_gray, tem_gray, cv2.TM_CCOEFF_NORMED)
+    threshold = 0.85
+    loc = np.where( res >= threshold)
+    for pt in zip(*loc[::-1]):
+        cv2.rectangle(img, pt, (pt[0] + tem.shape[1], pt[1] + tem.shape[0]), (0,255,255), 2)
+
     return img
 
 def Impresion(namme,imagen,x,y):
@@ -32,5 +34,3 @@ Impresion('Abraham',ab,1100,200)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
-
